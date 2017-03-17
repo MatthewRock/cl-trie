@@ -24,23 +24,16 @@
 
 (in-package #:cl-trie)
 
-(defclass trie ()
-  ((first-level
-    :documentation "A first level of nodes - conceptually these are all children nodes of root node.")
-   (comparator :initarg :comparator
-    :documentation "A function used to test supplied key."))
-  (:default-initargs
-   :comparator #'equal)
-  (:documentation
-   "A tree data structure that allows for efficient representation of large sets of sequential data, like strings."))
-
 (defgeneric (setf lookup) (new-value thing index)
-  (:documentation "Set value of item at INDEX in ELEM to NEW-VALUE."))
+  (:documentation "Set value of item at INDEX in THING to NEW-VALUE."))
 
 (defgeneric lookup (thing index)
   (:documentation "Check if there is something at INDEX in THING.
 Return two values, the first one being value at THING, and second one being
 T if anything was found at index and NIL if not."))
+
+(defgeneric insert (elem thing index)
+  (:documentation "Insert ELEM as value of item at INDEX in THING to NEW-VALUE. Alias to (setf lookup)."))
 
 (defgeneric remove-index (thing index)
   (:documentation "Remove INDEX entry from THING."))
@@ -62,6 +55,24 @@ T if anything was found at index and NIL if not."))
 
 (defgeneric mapkeys (fn thing)
   (:documentation "Apply function FN to each key in THING"))
+
+(defclass trie ()
+  ((first-level
+    :initarg :first-level
+    :documentation "A first level of nodes - conceptually these are all children nodes of root node.")
+   (comparator :initarg :comparator :type function
+               :documentation "A function used to test supplied key.")
+   (iterator :initarg :iterator :type function
+             :documentation "A function used to iterate over supplied key."))
+  (:default-initargs
+   :comparator #'equal
+    :iterator
+    :first-level nil)
+  (:documentation
+   "A tree data structure that allows for efficient representation of large sets of sequential data, like strings."))
+
+(defmethod lookup ((thing trie) index)
+  )
 
 (defun hash-map->trie (hash-map)
   "Convert hash-map to a trie.")

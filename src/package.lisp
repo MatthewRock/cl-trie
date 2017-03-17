@@ -2,4 +2,3 @@
 
 (defpackage #:cl-trie
   (:use #:cl))
-
