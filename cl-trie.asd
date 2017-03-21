@@ -29,5 +29,4 @@
   :serial t
   :pathname "src"
   :components ((:file "package")
-               (:file "node")
                (:file "cl-trie")))
