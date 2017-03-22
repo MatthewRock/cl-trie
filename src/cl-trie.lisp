@@ -25,7 +25,7 @@
 (in-package #:cl-trie)
 
 (defgeneric (setf lookup) (new-value thing index)
-  (:documentation "Set value of item at INDEX in THING to NEW-VALUE."))
+  (:documentation "Set value of item at INDEX in THING to NEW-VALUE. Return the node that will hold the value."))
 
 (defgeneric lookup (thing index)
   (:documentation "Check if there is something at INDEX in THING.
@@ -57,22 +57,58 @@ T if anything was found at index and NIL if not."))
   (:documentation "Apply function FN to each key in THING"))
 
 (defclass trie ()
-  ((first-level
-    :initarg :first-level
-    :documentation "A first level of nodes - conceptually these are all children nodes of root node.")
-   (comparator :initarg :comparator :type function
-               :documentation "A function used to test supplied key.")
-   (iterator :initarg :iterator :type function
-             :documentation "A function used to iterate over supplied key."))
+  ((children :initarg :children :accessor children :type list
+             :documentation "Children nodes of the trie.")
+   (key :initarg :key :initform (warn "Key for trie not provided, possibly an overlook!") :reader key
+        :documentation "A part of the sequence, that indicates that this node represents a sequence of all keys from the root up to this node, including this node.")
+   (value :initarg :value :accessor value)
+   (activep :initarg :activep :accessor activep :type boolean
+            :documentation "A flag that tells whether a node is active and value is of interest, or is inactive and value can be ignored."))
   (:default-initargs
-   :comparator #'equal
-    :iterator
-    :first-level nil)
+   :children nil
+    :value nil
+    :activep nil)
   (:documentation
    "A tree data structure that allows for efficient representation of large sets of sequential data, like strings."))
 
-(defmethod lookup ((thing trie) index)
-  )
+(defmethod lookup ((thing trie) (index string))
+  (if (string= index "")
+      (if (activep thing)
+          (values (value thing) t)
+          (values nil nil))
+      (loop for char across index
+         for current-node = (find char (children thing) :test #'char= :key #'key)
+         then (find char (children current-node) :test #'char= :key #'key)
+         while current-node
+         finally (if (and current-node (activep current-node))
+                     (return (values (value current-node) t))
+                     (return (values nil nil))))))
+
+(defmethod (setf lookup) (new-value (thing trie) (index string))
+  (if (string= index "")
+      (progn
+        (setf (value thing) new-value)
+        (setf (activep thing) t)
+        thing)
+      (loop for char across index
+         for current-node = (or
+                             (find char (children thing)
+                                   :test #'char= :key #'key)
+                             ;; TODO: Insert in proper place instead of pushing.
+                             ;; To take advantage of binary search
+                             (car (push (make-instance 'trie :key char)
+                                        (children thing))))
+         then (or
+               (find char (children current-node)
+                     :test #'char= :key #'key)
+               ;; TODO: Insert in proper place instead of pushing.
+               ;; To take advantage of binary search
+               (car (push (make-instance 'trie :key char)
+                          (children current-node))))
+         finally (progn
+                   (setf (value current-node) new-value)
+                   (setf (activep current-node) t)
+                   (return current-node)))))
 
 (defun hash-map->trie (hash-map)
   "Convert hash-map to a trie.")
