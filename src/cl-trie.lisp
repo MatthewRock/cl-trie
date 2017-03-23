@@ -32,6 +32,7 @@
 
    ;; Trie generic functions
    lookup
+   insert
 
    ;; Conditions
    empty-key-warning
@@ -131,6 +132,9 @@ T if anything was found at index and NIL if not."))
                    (setf (value current-node) new-value)
                    (setf (activep current-node) t)
                    (return current-node)))))
+
+(defmethod insert (elem (trie trie) (index string))
+  (setf (lookup trie index) elem))
 
 (defun hash-map->trie (hash-map)
   "Convert hash-map to a trie.")
