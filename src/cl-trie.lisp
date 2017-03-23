@@ -33,6 +33,8 @@
    ;; Trie generic functions
    lookup
 
+   ;; Conditions
+   empty-key-warning
    ))
 
 (in-package #:cl-trie)
@@ -69,10 +71,17 @@ T if anything was found at index and NIL if not."))
 (defgeneric mapkeys (fn trie)
   (:documentation "Apply function FN to each key in TRIE"))
 
+(define-condition empty-key-warning (warning)
+  ()
+  (:report (lambda (con stream)
+             (declare (ignore con))
+             (format stream "Key for trie not provided, possibly an overlook!")))
+  (:documentation "A warning emmited when key for trie is not provided."))
+
 (defclass trie ()
   ((children :initarg :children :accessor children :type list
              :documentation "Children nodes of the trie.")
-   (key :initarg :key :initform (warn "Key for trie not provided, possibly an overlook!") :reader key
+   (key :initarg :key :initform (warn 'empty-key-warning) :reader key
         :documentation "A part of the sequence, that indicates that this node represents a sequence of all keys from the root up to this node, including this node.")
    (value :initarg :value :accessor value)
    (activep :initarg :activep :accessor activep :type boolean
