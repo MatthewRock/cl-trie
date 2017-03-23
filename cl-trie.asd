@@ -28,5 +28,4 @@
   :license "MIT"
   :serial t
   :pathname "src"
-  :components ((:file "package")
-               (:file "cl-trie")))
+  :components ((:file "cl-trie")))

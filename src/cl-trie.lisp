@@ -21,6 +21,19 @@
 ;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 ;; THE SOFTWARE.
 
+(defpackage #:cl-trie
+  (:use #:cl)
+  (:export
+   ;; Trie and its accessors
+   trie
+   key
+   value
+   activep
+
+   ;; Trie generic functions
+   lookup
+
+   ))
 
 (in-package #:cl-trie)
 
