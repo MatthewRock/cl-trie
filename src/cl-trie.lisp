@@ -37,37 +37,37 @@
 
 (in-package #:cl-trie)
 
-(defgeneric (setf lookup) (new-value thing index)
-  (:documentation "Set value of item at INDEX in THING to NEW-VALUE. Return the node that will hold the value."))
+(defgeneric (setf lookup) (new-value trie index)
+  (:documentation "Set value of item at INDEX in TRIE to NEW-VALUE. Return the node that will hold the value."))
 
-(defgeneric lookup (thing index)
-  (:documentation "Check if there is something at INDEX in THING.
-Return two values, the first one being value at THING, and second one being
+(defgeneric lookup (trie index)
+  (:documentation "Check if there is something at INDEX in TRIE.
+Return two values, the first one being value at TRIE, and second one being
 T if anything was found at index and NIL if not."))
 
-(defgeneric insert (elem thing index)
-  (:documentation "Insert ELEM as value of item at INDEX in THING to NEW-VALUE. Alias to (setf lookup)."))
+(defgeneric insert (elem trie index)
+  (:documentation "Insert ELEM as value of item at INDEX in TRIE to NEW-VALUE. Alias to (setf lookup)."))
 
-(defgeneric remove-index (thing index)
-  (:documentation "Remove INDEX entry from THING."))
+(defgeneric remove-index (trie index)
+  (:documentation "Remove INDEX entry from TRIE."))
 
-(defgeneric all-keys (thing)
-  (:documentation "Return vector of all keys of THING. Might be very long."))
+(defgeneric all-keys (trie)
+  (:documentation "Return vector of all keys of TRIE. Might be very long."))
 
-(defgeneric all-values (thing)
-  (:documentation "Return vector of all values of THING. Might be very long."))
+(defgeneric all-values (trie)
+  (:documentation "Return vector of all values of TRIE. Might be very long."))
 
-(defgeneric emptyp (thing)
-  (:documentation "Return T if THING is empty."))
+(defgeneric emptyp (trie)
+  (:documentation "Return T if TRIE is empty."))
 
-(defgeneric clear (thing)
-  (:documentation "Clear THING of its contents, leaving it empty."))
+(defgeneric clear (trie)
+  (:documentation "Clear TRIE of its contents, leaving it empty."))
 
-(defgeneric size (thing)
-  (:documentation "Return size of THING, where size is number of elements found in the thing."))
+(defgeneric size (trie)
+  (:documentation "Return size of TRIE, where size is number of elements found in the trie."))
 
-(defgeneric mapkeys (fn thing)
-  (:documentation "Apply function FN to each key in THING"))
+(defgeneric mapkeys (fn trie)
+  (:documentation "Apply function FN to each key in TRIE"))
 
 (defclass trie ()
   ((children :initarg :children :accessor children :type list
@@ -84,33 +84,33 @@ T if anything was found at index and NIL if not."))
   (:documentation
    "A tree data structure that allows for efficient representation of large sets of sequential data, like strings."))
 
-(defmethod lookup ((thing trie) (index string))
+(defmethod lookup ((trie trie) (index string))
   (if (string= index "")
-      (if (activep thing)
-          (values (value thing) t)
+      (if (activep trie)
+          (values (value trie) t)
           (values nil nil))
       (loop for char across index
-         for current-node = (find char (children thing) :test #'char= :key #'key)
+         for current-node = (find char (children trie) :test #'char= :key #'key)
          then (find char (children current-node) :test #'char= :key #'key)
          while current-node
          finally (if (and current-node (activep current-node))
                      (return (values (value current-node) t))
                      (return (values nil nil))))))
 
-(defmethod (setf lookup) (new-value (thing trie) (index string))
+(defmethod (setf lookup) (new-value (trie trie) (index string))
   (if (string= index "")
       (progn
-        (setf (value thing) new-value)
-        (setf (activep thing) t)
-        thing)
+        (setf (value trie) new-value)
+        (setf (activep trie) t)
+        trie)
       (loop for char across index
          for current-node = (or
-                             (find char (children thing)
+                             (find char (children trie)
                                    :test #'char= :key #'key)
                              ;; TODO: Insert in proper place instead of pushing.
                              ;; To take advantage of binary search
                              (car (push (make-instance 'trie :key char)
-                                        (children thing))))
+                                        (children trie))))
          then (or
                (find char (children current-node)
                      :test #'char= :key #'key)
