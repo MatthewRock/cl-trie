@@ -1,0 +1,37 @@
+language: lisp
+sudo: false
+
+env:
+
+  global:
+    - PATH=~/.roswell/bin:$PATH
+    - ROSWELL_INSTALL_DIR=$HOME/.roswell
+
+  matrix:
+    - LISP=abcl-bin
+    - LISP=allegro
+    - LISP=sbcl
+    - LISP=cmu-bin
+    - LISP=ccl-bin
+    # Clisp turned off due to problems with UIOP.
+    #- LISP=clisp
+    - LISP=ecl
+
+addons:
+  apt:
+    packages:
+      - libc6-i386
+      - openjdk-7-jre
+
+cache:
+  directories:
+    - $HOME/.roswell
+    - $HOME/.config/common-lisp
+
+install:
+  - curl -L https://raw.githubusercontent.com/roswell/roswell/release/scripts/install-for-ci.sh | sh
+  - ros install fiveam
+  - ros install MatthewRock/cl-trie
+
+script:
+  - ./roswell/cl-trie-test.ros
