@@ -80,19 +80,27 @@ T if anything was found at index and NIL if not."))
   (:documentation "A warning emmited when key for trie is not provided."))
 
 (defclass trie ()
-  ((children :initarg :children :accessor children :type list
+  ((%children :initarg :children :accessor children :type list
              :documentation "Children nodes of the trie.")
-   (key :initarg :key :initform (warn 'empty-key-warning) :reader key
+   (%key :initarg :key :initform (warn 'empty-key-warning) :reader key
         :documentation "A part of the sequence, that indicates that this node represents a sequence of all keys from the root up to this node, including this node.")
-   (value :initarg :value :accessor value)
-   (activep :initarg :activep :accessor activep :type boolean
+   (%value :initarg :value :accessor value :initform nil)
+   (%activep :initarg :activep :accessor activep :type boolean :initform nil
             :documentation "A flag that tells whether a node is active and value is of interest, or is inactive and value can be ignored."))
   (:default-initargs
-   :children nil
-    :value nil
-    :activep nil)
+   :children nil)
   (:documentation
    "A tree data structure that allows for efficient representation of large sets of sequential data, like strings."))
+
+(defmethod initialize-instance :after ((instance trie)
+                                       &key (value nil value-provided-p)
+                                         (activep nil active-provided-p))
+  (declare (ignorable value activep))
+  (if (and value-provided-p (not active-provided-p))
+      (setf (activep instance) t)))
+
+(defmethod (setf value) :after (value (trie trie))
+  (setf (activep trie) t))
 
 (defmethod lookup ((trie trie) (index string))
   (if (string= index "")
@@ -111,7 +119,6 @@ T if anything was found at index and NIL if not."))
   (if (string= index "")
       (progn
         (setf (value trie) new-value)
-        (setf (activep trie) t)
         trie)
       (loop for char across index
          for current-node = (or
@@ -130,7 +137,6 @@ T if anything was found at index and NIL if not."))
                           (children current-node))))
          finally (progn
                    (setf (value current-node) new-value)
-                   (setf (activep current-node) t)
                    (return current-node)))))
 
 (defmethod insert (elem (trie trie) (index string))

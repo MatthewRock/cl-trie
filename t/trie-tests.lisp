@@ -7,6 +7,10 @@
 (defun run-tests ()
   (run! 'cl-trie-suite))
 
+(defmacro ignore-warnings (&body body)
+  `(handler-bind ((warning #'muffle-warning))
+     ,@body))
+
 (def-suite cl-trie-suite
     :description "Tests for cl-trie package.")
 
@@ -16,15 +20,38 @@
   ;; No key should signal a warning.
   (signals cl-trie:empty-key-warning (make-instance 'cl-trie:trie))
   ;; Various keyword arguments configuration
-  (finishes (make-instance 'cl-trie:trie :value 5 :activep t))
-  (finishes (make-instance 'cl-trie:trie :value 5))
-  (finishes (make-instance 'cl-trie:trie :activep nil))
-  (finishes (make-instance 'cl-trie:trie :key "a"))
-  (finishes (make-instance 'cl-trie:trie :children nil))
-  (finishes (make-instance 'cl-trie:trie :key "a" :value 5))
-  (finishes (make-instance 'cl-trie:trie :key "a" :activep t))
-  (finishes (make-instance 'cl-trie:trie :key "a" :value 5 :activep t))
-  (finishes (make-instance 'cl-trie:trie :key "a" :value 5 :activep t :children nil)))
+
+  (ignore-warnings
+    (finishes (make-instance 'cl-trie:trie :value 5 :activep t))
+    (finishes (make-instance 'cl-trie:trie :value 5))
+    (finishes (make-instance 'cl-trie:trie :activep nil))
+    (finishes (make-instance 'cl-trie:trie :key "a"))
+    (finishes (make-instance 'cl-trie:trie :children nil))
+    (finishes (make-instance 'cl-trie:trie :key "a" :value 5))
+    (finishes (make-instance 'cl-trie:trie :key "a" :activep t))
+    (finishes (make-instance 'cl-trie:trie :key "a" :value 5 :activep t))
+    (finishes (make-instance 'cl-trie:trie :key "a" :value 5 :activep t :children nil))))
+
+(test trie-activep-test
+  (ignore-warnings
+    (is-false (cl-trie:activep (make-instance 'cl-trie:trie)))
+    (is-false (cl-trie:activep (make-instance 'cl-trie:trie :key "a")))
+    (is-true (cl-trie:activep (make-instance 'cl-trie:trie :key "a" :value 5)))
+    (is-true (cl-trie:activep (make-instance 'cl-trie:trie :key "a" :value 5 :activep t)))
+    (is-true (cl-trie:activep (make-instance 'cl-trie:trie :key "a" :value 5 :activep t :children nil)))
+    (is-false (cl-trie:activep (make-instance 'cl-trie:trie :key "a" :value 5 :activep nil :children nil)))
+    (is-false (cl-trie:activep (make-instance 'cl-trie:trie :key "a" :value 5 :activep nil)))
+    (is-false (cl-trie:activep (make-instance 'cl-trie:trie :key "a" :activep nil)))
+    (is-false (cl-trie:activep (make-instance 'cl-trie:trie :activep nil)))
+    (is-false (cl-trie:activep (make-instance 'cl-trie:trie :activep nil :value 5)))
+    (is-false (cl-trie:activep (make-instance 'cl-trie:trie :activep nil :value 5 :children nil)))
+    (is-false (cl-trie:activep (make-instance 'cl-trie:trie :activep nil :children nil)))
+    (is-true (cl-trie:activep (make-instance 'cl-trie:trie :activep t :children nil)))
+    (is-true (cl-trie:activep (make-instance 'cl-trie:trie :activep t :children nil :value 5)))
+    (is-true (cl-trie:activep (make-instance 'cl-trie:trie :activep t :value 5)))
+    (is-true (cl-trie:activep (make-instance 'cl-trie:trie :value 5)))
+    (is-true (cl-trie:activep (make-instance 'cl-trie:trie :value 5 :children nil)))))
+
 
 (test trie-setf
   (let ((trie (make-instance 'cl-trie:trie :key "")))
