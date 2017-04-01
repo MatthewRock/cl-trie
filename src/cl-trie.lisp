@@ -116,17 +116,10 @@ T if anything was found at index and NIL if not."))
          finally (return current-node))))
 
 (defmethod lookup ((trie trie) (index string))
-  (if (string= index "")
-      (if (activep trie)
-          (values (value trie) t)
-          (values nil nil))
-      (loop for char across index
-         for current-node = (find char (children trie) :test #'char= :key #'key)
-         then (find char (children current-node) :test #'char= :key #'key)
-         while current-node
-         finally (if (and current-node (activep current-node))
-                     (return (values (value current-node) t))
-                     (return (values nil nil))))))
+  (let ((node (find-node trie index)))
+    (if (and node (activep node))
+        (values (value node) t)
+        (values nil nil))))
 
 (defmethod (setf lookup) (new-value (trie trie) (index string))
   (if (string= index "")
