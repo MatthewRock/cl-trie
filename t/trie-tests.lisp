@@ -52,6 +52,15 @@
     (is-true (cl-trie:activep (make-instance 'cl-trie:trie :value 5)))
     (is-true (cl-trie:activep (make-instance 'cl-trie:trie :value 5 :children nil)))))
 
+(test trie-find-node
+  (let* ((trie (make-instance 'cl-trie:trie :key ""))
+         (a-node (cl-trie:insert 5 trie "a"))
+         (ali-node (cl-trie:insert 5 trie "ali"))
+         (bali-node (cl-trie:insert 5 trie "bali")))
+    (is (eq trie (cl-trie:find-node trie "")))
+    (is (eq a-node (cl-trie:find-node trie "a")))
+    (is (eq ali-node (cl-trie:find-node trie "ali")))
+    (is (eq bali-node (cl-trie:find-node trie "bali")))))
 
 (test trie-setf
   (let ((trie (make-instance 'cl-trie:trie :key "")))

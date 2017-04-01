@@ -33,6 +33,7 @@
    ;; Trie generic functions
    lookup
    insert
+   find-node
 
    ;; Conditions
    empty-key-warning
@@ -42,6 +43,9 @@
 
 (defgeneric (setf lookup) (new-value trie index)
   (:documentation "Set value of item at INDEX in TRIE to NEW-VALUE. Return the node that will hold the value."))
+
+(defgeneric find-node (trie index)
+  (:documentation "Find node under INDEX in TRIE, or return NIL if no node has been found."))
 
 (defgeneric lookup (trie index)
   (:documentation "Check if there is something at INDEX in TRIE.
@@ -101,6 +105,15 @@ T if anything was found at index and NIL if not."))
 
 (defmethod (setf value) :after (value (trie trie))
   (setf (activep trie) t))
+
+(defmethod find-node ((trie trie) (index string))
+  (if (string= index "")
+      trie
+      (loop for char across index
+         for current-node = (find char (children trie) :test #'char= :key #'key)
+         then (find char (children current-node) :test #'char= :key #'key)
+         while current-node
+         finally (return current-node))))
 
 (defmethod lookup ((trie trie) (index string))
   (if (string= index "")
