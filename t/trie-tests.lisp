@@ -20,7 +20,6 @@
   ;; No key should signal a warning.
   (signals cl-trie:empty-key-warning (make-instance 'cl-trie:trie))
   ;; Various keyword arguments configuration
-
   (ignore-warnings
     (finishes (make-instance 'cl-trie:trie :value 5 :activep t))
     (finishes (make-instance 'cl-trie:trie :value 5))
@@ -32,7 +31,8 @@
     (finishes (make-instance 'cl-trie:trie :key "a" :value 5 :activep t))
     (finishes (make-instance 'cl-trie:trie :key "a" :value 5 :activep t :children nil))))
 
-(test trie-activep-test
+
+(test trie-activep-sanity
   (ignore-warnings
     (is-false (cl-trie:activep (make-instance 'cl-trie:trie)))
     (is-false (cl-trie:activep (make-instance 'cl-trie:trie :key "a")))
@@ -51,6 +51,19 @@
     (is-true (cl-trie:activep (make-instance 'cl-trie:trie :activep t :value 5)))
     (is-true (cl-trie:activep (make-instance 'cl-trie:trie :value 5)))
     (is-true (cl-trie:activep (make-instance 'cl-trie:trie :value 5 :children nil)))))
+
+(test trie-value-sanity
+  (ignore-warnings
+    (let ((trie (make-instance 'cl-trie:trie :value 13 :activep t)))
+      (is (= (cl-trie:value trie) 13))
+      (finishes (setf (cl-trie:value trie) 22))
+      (is (= (cl-trie:value trie) 22))
+      (setf (cl-trie:activep trie) nil)
+      ;; Activep doesn't affect the value
+      (is (= (cl-trie:value trie) 22))
+      (setf (cl-trie:value trie) 13)
+      ;; But setting the vavlue does affect activep
+      (is-true (cl-trie:activep trie)))))
 
 (test trie-find-node
   (let* ((trie (make-instance 'cl-trie:trie :key ""))
