@@ -80,8 +80,15 @@ T if anything was found at index and NIL if not."))
   ()
   (:report (lambda (con stream)
              (declare (ignore con))
-             (format stream "Key for trie not provided, possibly an overlook!")))
+             (format stream "Key for trie not provided, possibly an overlook! See documentation for more information.")))
   (:documentation "A warning emmited when key for trie is not provided."))
+
+(define-condition wrong-key-type-error (error)
+  ()
+  (:report (lambda (con stream)
+             (declare (ignore con))
+             (format stream "A key for trie is of a wrong type! See documentation for more information.")))
+  (:documentation "An error emmited when key is of a wrong type."))
 
 (defclass trie ()
   ((%children :initarg :children :accessor children :type list
@@ -95,6 +102,13 @@ T if anything was found at index and NIL if not."))
    :children nil)
   (:documentation
    "A tree data structure that allows for efficient representation of large sets of sequential data, like strings."))
+
+(defmethod initialize-instance :around ((instance trie)
+                                        &key key)
+  (when key
+    (unless (typep key 'character)
+      (error 'wrong-key-type-error)))
+  (call-next-method))
 
 (defmethod initialize-instance :after ((instance trie)
                                        &key (value nil value-provided-p)
