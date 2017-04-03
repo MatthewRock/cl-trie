@@ -37,6 +37,7 @@
 
    ;; Conditions
    empty-key-warning
+   wrong-key-type-error
    ))
 
 (in-package #:cl-trie)
@@ -72,6 +73,15 @@ T if anything was found at index and NIL if not."))
 
 (defgeneric size (trie)
   (:documentation "Return size of TRIE, where size is number of elements found in the trie."))
+
+(defgeneric attach (parent-trie children-trie &key on-conflict)
+  (:documentation "Attach CHILDREN-TRIE to PARENT-TRIE.
+If conflict happens(attached trie has the same key as already existing branch),
+the on-conflict describes the chosen strategy.
+Possible options:
+NIL - do nothing
+:merge - try to merge tries
+:error - raise an error"))
 
 (defgeneric mapkeys (fn trie)
   (:documentation "Apply function FN to each key in TRIE"))
