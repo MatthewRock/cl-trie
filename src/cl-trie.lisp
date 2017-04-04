@@ -29,6 +29,7 @@
    key
    value
    activep
+   children
 
    ;; Trie generic functions
    lookup

@@ -31,7 +31,6 @@
     (finishes (make-instance 'cl-trie:trie :key #\a :value 5 :activep t))
     (finishes (make-instance 'cl-trie:trie :key #\a :value 5 :activep t :children nil))))
 
-
 (test trie-activep-sanity
   (ignore-warnings
     (is-false (cl-trie:activep (make-instance 'cl-trie:trie)))
@@ -67,11 +66,16 @@
 
 (test trie-key-sanity
   (let ((trie (make-instance 'cl-trie:trie :key #\a)))
-    (is (char= (cl-trie:key trie) #\a))))
+    (is (char= (cl-trie:key trie) #\a)))
+  (signals cl-trie:wrong-key-type-error (make-instance 'cl-trie:trie :key "a")))
 
-(test trie-children-sanity)
-
-(test trie-compose)
+(test trie-children-sanity
+  (let* ((trie (make-instance 'cl-trie:trie :key #\a :value 5))
+         (trie2 (make-instance 'cl-trie:trie :key #\m :children (list trie)))
+         (trie3 (make-instance 'cl-trie:trie :key nil :children (list trie2))))
+    (is (null (cl-trie:children trie)))
+    (is-false (null (cl-trie:children trie2)))
+    (is (= 5 (cl-trie:lookup trie3 "ma")))))
 
 (test trie-find-node
   (let* ((trie (make-instance 'cl-trie:trie :key nil))
