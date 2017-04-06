@@ -117,13 +117,16 @@ NIL - do nothing
 
 (defmethod initialize-instance :around ((instance trie)
                                         &key key verbose)
+  ;; The only valid type of key is character or NIL.
   (when key
     (unless (typep key 'character)
       (error 'wrong-key-type-error)))
-  (unless verbose
-    (handler-bind ((empty-key-warning #'muffle-warning))
-      (call-next-method)))
-  (call-next-method))
+
+  (if verbose
+      (call-next-method)
+      ;; Muffle our warnings if we're not werbose.
+      (handler-bind ((empty-key-warning #'muffle-warning))
+        (call-next-method))))
 
 (defmethod initialize-instance :after ((instance trie)
                                        &key (value nil value-provided-p)
