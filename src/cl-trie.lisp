@@ -35,6 +35,7 @@
    lookup
    insert
    find-node
+   remove-index
 
    ;; Conditions
    empty-key-warning
@@ -166,6 +167,26 @@ NIL - do nothing
 
 (defmethod insert (elem (trie trie) (index string))
   (setf (lookup trie index) elem))
+
+(defmethod remove-index ((trie trie) (index string))
+  (if (string= index "")
+      (setf (activep trie) nil)
+      ;; Get a node before the deleted one
+      (let ((text-len (length index))
+            (previous-node (find-node trie (subseq index 0 (1- text-len))))
+            (node-to-delete (and previous-node (find (aref index (1- text-len))
+                                                     (children previous-node)
+                                                     :key #'key))))
+        ;; Delete only if the nodes exist
+        (when node-to-delete
+          ;; If node has ancestors, only deactivate and remove value.
+          (if (children node-to-delete)
+              ;; Need to setf value first because (setf value) flips activep to true
+              (progn (setf (value node-to-delete) nil)
+                     (setf (activep node-to-delete) nil))
+              ;; If node has no ancestors, we can safely remove it.
+              (setf (children previous-node) (remove node-to-delete (children previous-node) :test #'eq)))
+          t))))
 
 (defun hash-map->trie (hash-map)
   "Convert hash-map to a trie.")

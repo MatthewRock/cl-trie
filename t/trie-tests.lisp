@@ -123,7 +123,7 @@
 
 ;; The same test as trie-setf.
 (test trie-insert
-  (let ((trie (make-instance 'cl-trie:trie :key nil)))
+  (let ((trie (make-instance 'cl-trie:trie :verbose nil)))
     (is (not (cl-trie:activep trie)))
     (is-false (cl-trie:key trie))
     (is (every #'null (multiple-value-list (cl-trie:lookup trie "word"))))
@@ -138,3 +138,16 @@
     (cl-trie:insert 15 trie "wor")
     (is (every #'identity (multiple-value-list (cl-trie:lookup trie "wor"))))
     (is (= (cl-trie:lookup trie "wor") 15)))  )
+
+
+;; TODO: More tests
+;; TODO: See if remove-index should delete parents.
+(test trie-remove-index
+  (let ((trie (make-instance 'cl-trie:trie :verbose nil)))
+    (setf (cl-trie:lookup trie "lisp") 1)
+    (setf (cl-trie:lookup trie "lis") 3)
+    (setf (cl-trie:lookup trie "dona") 5)
+    ;; Check if it deletes the last node
+    (is (= 1 (length (cl-trie:children (cl-trie:find-node trie "lis")))))
+    (is-true (cl-trie:remove-index trie "lisp"))
+    (is (= 0 (length (cl-trie:children (cl-trie:find-node trie "lis")))))))
