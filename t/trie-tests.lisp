@@ -78,6 +78,18 @@
     (is (= 5 (cl-trie:lookup trie3 "ma")))))
 
 (test trie-find-node
+  (let* ((trie (make-instance 'cl-trie:trie :key nil)))
+    (is (zerop (length (cl-trie:children trie))))
+    (is-false (cl-trie:find-node trie "a"))
+    (let ((new-node (cl-trie:find-node trie "a" :create-new t)))
+      (is (= 1 (length (cl-trie:children trie))))
+      (is (eq (car (cl-trie:children trie))
+              new-node)))
+    (let ((new-node (cl-trie:find-node trie "da" :create-new t)))
+      (is (= 2 (length (cl-trie:children trie))))
+      (is (eq (car (cl-trie:children
+                    (car (cl-trie:children trie))))
+              new-node))))
   (let* ((trie (make-instance 'cl-trie:trie :key nil))
          (a-node (cl-trie:insert 5 trie "a"))
          (ali-node (cl-trie:insert 5 trie "ali"))
