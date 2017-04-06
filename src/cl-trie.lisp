@@ -46,8 +46,8 @@
 (defgeneric (setf lookup) (new-value trie index)
   (:documentation "Set value of item at INDEX in TRIE to NEW-VALUE. Return the node that will hold the value."))
 
-(defgeneric find-node (trie index)
-  (:documentation "Find node under INDEX in TRIE, or return NIL if no node has been found."))
+(defgeneric find-node (trie index &key create-new)
+  (:documentation "Find node under INDEX in TRIE, or return NIL if no node has been found. If CREATE-NEW is T, all the nodes, including the searched one, will be created if they do not exist, effectively creating the node at index."))
 
 (defgeneric lookup (trie index)
   (:documentation "Check if there is something at INDEX in TRIE.
@@ -131,12 +131,18 @@ NIL - do nothing
 (defmethod (setf value) :after (value (trie trie))
   (setf (activep trie) t))
 
-(defmethod find-node ((trie trie) (index string))
+(defmethod find-node ((trie trie) (index string) &key (create-new nil))
   (if (string= index "")
       trie
       (loop for char across index
-         for current-node = (find char (children trie) :test #'char= :key #'key)
-         then (find char (children current-node) :test #'char= :key #'key)
+         for current-node = (or (find char (children trie) :test #'char= :key #'key)
+                                ;; TODO: Insert in proper place instead of pushing
+                                ;; To take advantage of binary search
+                                (when create-new (car (push (make-instance 'trie :key char)
+                                                            (children trie)))))
+         then (or (find char (children current-node) :test #'char= :key #'key)
+                  (when create-new (car (push (make-instance 'trie :key char)
+                                              (children current-node)))))
          while current-node
          finally (return current-node))))
 
@@ -147,28 +153,9 @@ NIL - do nothing
         (values nil nil))))
 
 (defmethod (setf lookup) (new-value (trie trie) (index string))
-  (if (string= index "")
-      (progn
-        (setf (value trie) new-value)
-        trie)
-      (loop for char across index
-         for current-node = (or
-                             (find char (children trie)
-                                   :test #'char= :key #'key)
-                             ;; TODO: Insert in proper place instead of pushing.
-                             ;; To take advantage of binary search
-                             (car (push (make-instance 'trie :key char)
-                                        (children trie))))
-         then (or
-               (find char (children current-node)
-                     :test #'char= :key #'key)
-               ;; TODO: Insert in proper place instead of pushing.
-               ;; To take advantage of binary search
-               (car (push (make-instance 'trie :key char)
-                          (children current-node))))
-         finally (progn
-                   (setf (value current-node) new-value)
-                   (return current-node)))))
+  (let ((node (find-node trie index :create-new t)))
+    (setf (value node) new-value)
+    node))
 
 (defmethod insert (elem (trie trie) (index string))
   (setf (lookup trie index) elem))
