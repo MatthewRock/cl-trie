@@ -29,7 +29,12 @@
     (finishes (make-instance 'cl-trie:trie :key #\a :value 5))
     (finishes (make-instance 'cl-trie:trie :key #\a :activep t))
     (finishes (make-instance 'cl-trie:trie :key #\a :value 5 :activep t))
-    (finishes (make-instance 'cl-trie:trie :key #\a :value 5 :activep t :children nil))))
+    (finishes (make-instance 'cl-trie:trie :key #\a :value 5 :activep t :children nil))
+    ;; Hack - fail if warning is raised
+    (finishes (handler-bind ((warning (lambda (x)
+                                        (error "Warning ~A encountered, no warnings should appear here!"
+                                               x))))
+                (make-instance 'cl-trie:trie :verbose nil)))))
 
 (test trie-activep-sanity
   (ignore-warnings

@@ -110,15 +110,19 @@ NIL - do nothing
    (%activep :initarg :activep :accessor activep :type boolean :initform nil
             :documentation "A flag that tells whether a node is active and value is of interest, or is inactive and value can be ignored."))
   (:default-initargs
-   :children nil)
+      :children nil
+      :verbose t)
   (:documentation
    "A tree data structure that allows for efficient representation of large sets of sequential data, like strings."))
 
 (defmethod initialize-instance :around ((instance trie)
-                                        &key key)
+                                        &key key verbose)
   (when key
     (unless (typep key 'character)
       (error 'wrong-key-type-error)))
+  (unless verbose
+    (handler-bind ((empty-key-warning #'muffle-warning))
+      (call-next-method)))
   (call-next-method))
 
 (defmethod initialize-instance :after ((instance trie)
