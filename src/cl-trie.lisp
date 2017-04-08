@@ -37,6 +37,9 @@
    find-node
    remove-index
 
+   ;; Trie utility functions
+   hash-table->trie
+
    ;; Conditions
    empty-key-warning
    wrong-key-type-error
@@ -188,8 +191,13 @@ NIL - do nothing
               (setf (children previous-node) (remove node-to-delete (children previous-node) :test #'eq)))
           t))))
 
-(defun hash-map->trie (hash-map)
-  "Convert hash-map to a trie.")
+(defun hash-table->trie (hash-map)
+  "Convert hash-table to a trie."
+  (declare (type hash-table hash-map))
+  (let ((new-trie (make-instance 'trie :verbose nil)))
+    (maphash (lambda (key val) (setf (lookup new-trie key) val))
+             hash-map)
+    new-trie))
 
 (defmacro dokeys ((val trie &optional ret-val) &body body)
   "Iterate over each key in the trie, evaluating body."

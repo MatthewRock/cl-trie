@@ -139,7 +139,6 @@
     (is (every #'identity (multiple-value-list (cl-trie:lookup trie "wor"))))
     (is (= (cl-trie:lookup trie "wor") 15)))  )
 
-
 ;; TODO: More tests
 ;; TODO: See if remove-index should delete parents.
 (test trie-remove-index
@@ -151,3 +150,17 @@
     (is (= 1 (length (cl-trie:children (cl-trie:find-node trie "lis")))))
     (is-true (cl-trie:remove-index trie "lisp"))
     (is (= 0 (length (cl-trie:children (cl-trie:find-node trie "lis")))))))
+
+(test trie-hash-table->trie
+  (let ((hash-map (make-hash-table :test #'equal)))
+    (setf (gethash "dada" hash-map) 5)
+    (setf (gethash "dad" hash-map) 4)
+    (setf (gethash "midori" hash-map) 12)
+    (setf (gethash "" hash-map) nil)
+    (let ((trie (cl-trie:hash-table->trie hash-map)))
+      (is (= (cl-trie:lookup trie "dada") 5))
+      (is (= (cl-trie:lookup trie "dad") 4))
+      (is (= (cl-trie:lookup trie "midori") 12))
+      (is (null (cl-trie:lookup trie "")))
+      (is-false (cl-trie:activep (cl-trie:find-node trie "da" )))
+      (is-false (cl-trie:find-node trie "dadad")))))
