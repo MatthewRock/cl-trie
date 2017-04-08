@@ -172,7 +172,7 @@ NIL - do nothing
   (if (string= index "")
       (setf (activep trie) nil)
       ;; Get a node before the deleted one
-      (let ((text-len (length index))
+      (let* ((text-len (length index))
             (previous-node (find-node trie (subseq index 0 (1- text-len))))
             (node-to-delete (and previous-node (find (aref index (1- text-len))
                                                      (children previous-node)
