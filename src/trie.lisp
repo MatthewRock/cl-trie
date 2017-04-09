@@ -104,6 +104,22 @@
               (setf (children previous-node) (remove node-to-delete (children previous-node) :test #'eq)))
           t))))
 
+(defmethod all-keys ((trie trie))
+  (let (container)
+    (labels ((count-all-keys (trie prefix)
+               (declare (type trie trie)
+                        (type string prefix))
+               ;; Create a new prefix. If node is NIL, use empty string.
+               (let ((new-prefix (concatenate 'string prefix
+                                              (or (let ((k (key trie)))
+                                                    (when k (string k)))
+                                                  ""))))
+                 (mapc (lambda (x) (count-all-keys x new-prefix)) (children trie))
+                 (when (activep trie)
+                   (push new-prefix container)))))
+      (count-all-keys trie ""))
+    container))
+
 (defun hash-table->trie (hash-map)
   "Convert hash-table to a trie."
   (declare (type hash-table hash-map))

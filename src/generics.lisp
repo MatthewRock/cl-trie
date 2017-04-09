@@ -41,10 +41,10 @@ T if anything was found at index and NIL if not."))
   (:documentation "Remove INDEX entry from TRIE."))
 
 (defgeneric all-keys (trie)
-  (:documentation "Return list of all keys of TRIE. Might be very long."))
+  (:documentation "Return list of all keys of TRIE."))
 
 (defgeneric all-values (trie)
-  (:documentation "Return list of all values of TRIE. Might be very long."))
+  (:documentation "Return list of all values of TRIE."))
 
 (defgeneric emptyp (trie)
   (:documentation "Return T if TRIE is empty."))

@@ -164,3 +164,21 @@
       (is (null (cl-trie:lookup trie "")))
       (is-false (cl-trie:activep (cl-trie:find-node trie "da" )))
       (is-false (cl-trie:find-node trie "dadad")))))
+
+(test trie-all-keys
+  (let ((trie (make-instance 'cl-trie:trie :verbose nil)))
+    (setf (cl-trie:lookup trie "dada") 5)
+    (setf (cl-trie:lookup trie "dad") 5)
+    (setf (cl-trie:lookup trie "mom") 5)
+    (setf (cl-trie:lookup trie "a") 5)
+    (let ((keys (cl-trie:all-keys trie)))
+      ;; All keys should be there and in alphabetical order
+      (is (equal keys (list  "dad" "dada" "mom" "a")))))
+  (let ((trie (make-instance 'cl-trie:trie :key #\d)))
+    (setf (cl-trie:lookup trie "ada") 5)
+    (setf (cl-trie:lookup trie "ad") 5)
+    (setf (cl-trie:lookup trie "mom") 5)
+    (setf (cl-trie:lookup trie "a") 5)
+    (let ((keys (cl-trie:all-keys trie)))
+      ;; All keys should be there and in alphabetical order
+      (is (equal keys (list "da" "dad" "dada" "dmom"))))))

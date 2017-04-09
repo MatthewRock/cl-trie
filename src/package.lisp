@@ -36,6 +36,7 @@
    insert
    find-node
    remove-index
+   all-keys
 
    ;; Trie utility functions
    hash-table->trie
