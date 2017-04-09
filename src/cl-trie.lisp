@@ -65,10 +65,10 @@ T if anything was found at index and NIL if not."))
   (:documentation "Remove INDEX entry from TRIE."))
 
 (defgeneric all-keys (trie)
-  (:documentation "Return vector of all keys of TRIE. Might be very long."))
+  (:documentation "Return list of all keys of TRIE. Might be very long."))
 
 (defgeneric all-values (trie)
-  (:documentation "Return vector of all values of TRIE. Might be very long."))
+  (:documentation "Return list of all values of TRIE. Might be very long."))
 
 (defgeneric emptyp (trie)
   (:documentation "Return T if TRIE is empty."))
@@ -105,14 +105,16 @@ NIL - do nothing
              (format stream "A key for trie is of a wrong type! See documentation for more information.")))
   (:documentation "An error emmited when key is of a wrong type."))
 
-(defclass trie ()
+(defclass basic-trie ()
   ((%children :initarg :children :accessor children :type list
-             :documentation "Children nodes of the trie.")
+              :documentation "Children nodes of the trie.")
    (%key :initarg :key :initform (warn 'empty-key-warning) :reader key
-        :documentation "A part of the sequence, that indicates that this node represents a sequence of all keys from the root up to this node, including this node.")
-   (%value :initarg :value :accessor value :initform nil)
-   (%activep :initarg :activep :accessor activep :type boolean :initform nil
-            :documentation "A flag that tells whether a node is active and value is of interest, or is inactive and value can be ignored."))
+         :documentation "A part of the sequence, that indicates that this node represents a sequence of all keys from the root up to this node, including this node.")
+   (%value :initarg :value :accessor value :initform nil)))
+
+(defclass trie (basic-trie)
+  ((%activep :initarg :activep :accessor activep :type boolean :initform nil
+             :documentation "A flag that tells whether a node is active and value is of interest, or is inactive and value can be ignored."))
   (:default-initargs
       :children nil
       :verbose t)
