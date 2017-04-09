@@ -37,6 +37,7 @@
    find-node
    remove-index
    all-keys
+   all-values
 
    ;; Trie utility functions
    hash-table->trie

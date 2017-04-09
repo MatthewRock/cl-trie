@@ -120,6 +120,16 @@
       (count-all-keys trie ""))
     container))
 
+(defmethod all-values ((trie trie))
+  (let (container)
+    (labels ((count-all-vals (trie)
+               (declare (type trie trie))
+               (mapc #'count-all-vals (children trie))
+               (when (activep trie)
+                 (push (value trie) container))))
+      (count-all-vals trie))
+    container))
+
 (defun hash-table->trie (hash-map)
   "Convert hash-table to a trie."
   (declare (type hash-table hash-map))
