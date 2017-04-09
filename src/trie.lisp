@@ -138,6 +138,16 @@
                  (every #'is-empty-trie (children trie)))))
     (is-empty-trie trie)))
 
+(defmethod size (trie)
+  (let ((counter 0))
+    (labels ((count-trie (trie)
+               (declare (type trie trie))
+               (mapc #'count-trie (children trie))
+               (when (activep trie)
+                 (incf counter))))
+      (count-trie trie))
+    counter))
+
 (defun hash-table->trie (hash-map)
   "Convert hash-table to a trie."
   (declare (type hash-table hash-map))

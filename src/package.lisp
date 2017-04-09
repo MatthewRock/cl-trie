@@ -39,6 +39,7 @@
    all-keys
    all-values
    emptyp
+   size
 
    ;; Trie utility functions
    hash-table->trie

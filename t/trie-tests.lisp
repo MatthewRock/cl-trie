@@ -206,3 +206,17 @@
     (is (cl-trie:emptyp trie)))
   (let ((trie (make-instance 'cl-trie:trie :key #\d :value 3)))
     (is-false (cl-trie:emptyp trie))))
+
+(test trie-size
+  (let ((trie (make-instance 'cl-trie:trie :verbose nil)))
+    (setf (cl-trie:lookup trie "dada") 3)
+    (setf (cl-trie:lookup trie "dad") 5)
+    (setf (cl-trie:lookup trie "mom") 8)
+    (setf (cl-trie:lookup trie "a") 13)
+    (is (= 4 (cl-trie:size trie))))
+  (let ((trie (make-instance 'cl-trie:trie :key #\a :value 3)))
+    (setf (cl-trie:lookup trie "dada") 3)
+    (setf (cl-trie:lookup trie "dad") 5)
+    (setf (cl-trie:lookup trie "mom") 8)
+    (setf (cl-trie:lookup trie "a") 13)
+    (is (= 5 (cl-trie:size trie)))))
