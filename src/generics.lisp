@@ -40,6 +40,9 @@ T if anything was found at index and NIL if not."))
 (defgeneric remove-index (trie index)
   (:documentation "Remove INDEX entry from TRIE."))
 
+(defgeneric remove-node (node &key preserve-value)
+  (:documentation "Deactivate NODE, removing the value unless preserve-value is non-nil."))
+
 (defgeneric all-keys (trie)
   (:documentation "Return list of all keys of TRIE."))
 

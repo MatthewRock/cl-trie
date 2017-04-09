@@ -139,6 +139,13 @@
     (is (every #'identity (multiple-value-list (cl-trie:lookup trie "wor"))))
     (is (= (cl-trie:lookup trie "wor") 15)))  )
 
+(test trie-remove-node
+  (let ((trie (make-instance 'cl-trie:trie :key #\d :value 5)))
+    (is (= (cl-trie:value trie) 5))
+    (is (cl-trie:activep trie))
+    (finishes (cl-trie:remove-node trie))
+    (is-false (cl-trie:activep trie))))
+
 ;; TODO: More tests
 ;; TODO: See if remove-index should delete parents.
 (test trie-remove-index
@@ -219,4 +226,24 @@
     (setf (cl-trie:lookup trie "dad") 5)
     (setf (cl-trie:lookup trie "mom") 8)
     (setf (cl-trie:lookup trie "a") 13)
-    (is (= 5 (cl-trie:size trie)))))
+    (is (= 5 (cl-trie:size trie))))
+  (let ((trie (make-instance 'cl-trie:trie :verbose nil)))
+    (is (= 0 (cl-trie:size trie)))))
+
+(test trie-clear
+  (let ((trie (make-instance 'cl-trie:trie :verbose nil)))
+    (setf (cl-trie:lookup trie "dada") 3)
+    (setf (cl-trie:lookup trie "dad") 5)
+    (setf (cl-trie:lookup trie "mom") 8)
+    (setf (cl-trie:lookup trie "a") 13)
+    (is (= 4 (cl-trie:size trie)))
+    (cl-trie:clear trie)
+    (is (= 0 (cl-trie:size trie))))
+  (let ((trie (make-instance 'cl-trie:trie :key #\a :value 3)))
+    (setf (cl-trie:lookup trie "dada") 3)
+    (setf (cl-trie:lookup trie "dad") 5)
+    (setf (cl-trie:lookup trie "mom") 8)
+    (setf (cl-trie:lookup trie "a") 13)
+    (is (= 5 (cl-trie:size trie)))
+    (cl-trie:clear trie)
+    (is (= 0 (cl-trie:size trie)))))

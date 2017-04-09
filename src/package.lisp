@@ -35,10 +35,12 @@
    lookup
    insert
    find-node
+   remove-node
    remove-index
    all-keys
    all-values
    emptyp
+   clear
    size
 
    ;; Trie utility functions

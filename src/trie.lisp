@@ -84,9 +84,15 @@
 (defmethod insert (elem (trie trie) (index string))
   (setf (lookup trie index) elem))
 
+(defmethod remove-node ((node trie) &key preserve-value)
+  ;; Need to setf value first because (setf value) flips activep to true
+  (unless preserve-value
+    (setf (value node) nil))
+  (setf (activep node) nil))
+
 (defmethod remove-index ((trie trie) (index string))
   (if (string= index "")
-      (setf (activep trie) nil)
+      (remove-node trie)
       ;; Get a node before the deleted one
       (let* ((text-len (length index))
             (previous-node (find-node trie (subseq index 0 (1- text-len))))
@@ -95,11 +101,9 @@
                                                      :key #'key))))
         ;; Delete only if the nodes exist
         (when node-to-delete
-          ;; If node has ancestors, only deactivate and remove value.
+          ;; If node has ancestors, only deactivate it.
           (if (children node-to-delete)
-              ;; Need to setf value first because (setf value) flips activep to true
-              (progn (setf (value node-to-delete) nil)
-                     (setf (activep node-to-delete) nil))
+              (remove-node node-to-delete)
               ;; If node has no ancestors, we can safely remove it.
               (setf (children previous-node) (remove node-to-delete (children previous-node) :test #'eq)))
           t))))
@@ -137,6 +141,15 @@
                  nil
                  (every #'is-empty-trie (children trie)))))
     (is-empty-trie trie)))
+
+(defmethod clear ((trie trie))
+  (labels ((clear-trie (trie)
+             (declare (type trie trie))
+             (mapc #'clear-trie (children trie))
+             (when (activep trie)
+               (remove-node trie))))
+    (clear-trie trie)
+    trie))
 
 (defmethod size (trie)
   (let ((counter 0))
