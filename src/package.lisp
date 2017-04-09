@@ -38,6 +38,7 @@
    remove-index
    all-keys
    all-values
+   emptyp
 
    ;; Trie utility functions
    hash-table->trie

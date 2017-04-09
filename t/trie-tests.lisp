@@ -181,7 +181,6 @@
     (let ((keys (cl-trie:all-keys trie)))
       (is (equal keys (list "da" "dad" "dada" "dmom"))))))
 
-
 (test trie-all-values
   (let ((trie (make-instance 'cl-trie:trie :verbose nil)))
     (setf (cl-trie:lookup trie "dada") 3)
@@ -197,3 +196,13 @@
     (setf (cl-trie:lookup trie "a") 3)
     (let ((keys (cl-trie:all-values trie)))
       (is (equal keys (list 3 5 8 13))))))
+
+(test trie-emptyp
+  (let ((trie (make-instance 'cl-trie:trie :verbose nil)))
+    (is (cl-trie:emptyp trie))
+    (setf (cl-trie:lookup trie "dad") 3)
+    (is-false (cl-trie:emptyp trie))
+    (cl-trie:remove-index trie "dad")
+    (is (cl-trie:emptyp trie)))
+  (let ((trie (make-instance 'cl-trie:trie :key #\d :value 3)))
+    (is-false (cl-trie:emptyp trie))))

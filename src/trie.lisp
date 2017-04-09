@@ -130,6 +130,14 @@
       (count-all-vals trie))
     container))
 
+(defmethod emptyp ((trie trie))
+  (labels ((is-empty-trie (trie)
+             (declare (type trie trie))
+             (if (activep trie)
+                 nil
+                 (every #'is-empty-trie (children trie)))))
+    (is-empty-trie trie)))
+
 (defun hash-table->trie (hash-map)
   "Convert hash-table to a trie."
   (declare (type hash-table hash-map))
