@@ -21,26 +21,16 @@
 ;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 ;; THE SOFTWARE.
 
+(in-package #:cl-trie)
 
-(asdf:defsystem #:cl-trie
-  :description "Common Lisp implementation of Trie data structure."
-  :author "Mateusz Malisz <maliszmat@gmail.com>"
-  :license "MIT"
-  :serial t
-  :pathname "src"
-  :components ((:file "package")
-               (:file "generics")
-               (:file "basic-trie")
-               (:file "trie"))
-  :in-order-to ((asdf:test-op
-                 (asdf:test-op #:cl-trie/tests))))
+;; At the lowest level, the trie should consist of key, the value it holds
+;; and children nodes.
+;; Basic-trie is intended to work as a base class that other trie implementations will derieve from.
+;; basic-trie is not meant to be used by itself.
 
-(asdf:defsystem #:cl-trie/tests
-  :description "Test suite for cl-trie library."
-  :author "Mateusz Malisz <maliszmat@gmail.com>"
-  :license "MIT"
-  :depends-on (#:cl-trie #:fiveam)
-  :pathname "t"
-  :components ((:file "trie-tests"))
-  :perform (asdf:test-op (o s)
-                         (uiop:symbol-call :cl-trie/tests :run-tests)))
+(defclass basic-trie ()
+  ((%children :initarg :children :accessor children :type list
+              :documentation "Children nodes of the trie.")
+   (%key :initarg :key :initform (warn 'empty-key-warning) :reader key
+         :documentation "A part of the sequence, that indicates that this node represents a sequence of all keys from the root up to this node, including this node.")
+   (%value :initarg :value :accessor value :initform nil)))

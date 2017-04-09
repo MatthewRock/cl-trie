@@ -21,26 +21,25 @@
 ;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 ;; THE SOFTWARE.
 
+(defpackage #:cl-trie
+  (:use #:cl)
+  (:export
+   ;; Trie and its accessors
+   trie
+   key
+   value
+   activep
+   children
 
-(asdf:defsystem #:cl-trie
-  :description "Common Lisp implementation of Trie data structure."
-  :author "Mateusz Malisz <maliszmat@gmail.com>"
-  :license "MIT"
-  :serial t
-  :pathname "src"
-  :components ((:file "package")
-               (:file "generics")
-               (:file "basic-trie")
-               (:file "trie"))
-  :in-order-to ((asdf:test-op
-                 (asdf:test-op #:cl-trie/tests))))
+   ;; Trie generic functions
+   lookup
+   insert
+   find-node
+   remove-index
 
-(asdf:defsystem #:cl-trie/tests
-  :description "Test suite for cl-trie library."
-  :author "Mateusz Malisz <maliszmat@gmail.com>"
-  :license "MIT"
-  :depends-on (#:cl-trie #:fiveam)
-  :pathname "t"
-  :components ((:file "trie-tests"))
-  :perform (asdf:test-op (o s)
-                         (uiop:symbol-call :cl-trie/tests :run-tests)))
+   ;; Trie utility functions
+   hash-table->trie
+
+   ;; Conditions
+   empty-key-warning
+   wrong-key-type-error))
