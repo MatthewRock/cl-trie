@@ -168,10 +168,3 @@
     (maphash (lambda (key val) (setf (lookup new-trie key) val))
              hash-map)
     new-trie))
-
-(defmacro dokeys ((val trie &optional ret-val) &body body)
-  "Iterate over each key in the trie, evaluating body."
-  'not-implemented)
-
-(defmacro dovals ((val trie &optional ret-val) &body body)
-  "Iterate over each value in the trie, evaluating body.")
