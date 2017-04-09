@@ -122,6 +122,15 @@
     (recursive-fun trie ""))
   t)
 
+(defmethod mapvalues ((fn function) (trie trie))
+  (labels ((recursive-fun (trie)
+             (declare (type trie trie))
+             (mapc #'recursive-fun (children trie))
+             (when (activep trie)
+               (funcall fn (value trie)))))
+    (recursive-fun trie))
+  t)
+
 (defmethod all-keys ((trie trie))
   (let (container)
     (declare (special container))
@@ -132,21 +141,18 @@
 
 (defmethod all-values ((trie trie))
   (let (container)
-    (labels ((count-all-vals (trie)
-               (declare (type trie trie))
-               (mapc #'count-all-vals (children trie))
-               (when (activep trie)
-                 (push (value trie) container))))
-      (count-all-vals trie))
+    (declare (special container))
+    (mapvalues (lambda (x)
+               (push x container))
+             trie)
     container))
 
 (defmethod emptyp ((trie trie))
-  (labels ((is-empty-trie (trie)
-             (declare (type trie trie))
-             (if (activep trie)
-                 nil
-                 (every #'is-empty-trie (children trie)))))
-    (is-empty-trie trie)))
+  ;; Mapvalues returns T upon successful completion
+  (mapvalues (lambda (val)
+               (declare (ignore val))
+               (return-from emptyp nil))
+             trie))
 
 (defmethod clear ((trie trie))
   (labels ((clear-trie (trie)

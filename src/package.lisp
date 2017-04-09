@@ -38,6 +38,7 @@
    remove-node
    remove-index
    mapkeys
+   mapvalues
    all-keys
    all-values
    emptyp
