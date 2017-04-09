@@ -43,6 +43,12 @@ T if anything was found at index and NIL if not."))
 (defgeneric remove-node (node &key preserve-value)
   (:documentation "Deactivate NODE, removing the value unless preserve-value is non-nil."))
 
+(defgeneric mapkeys (fn trie)
+  (:documentation "Apply function FN to each key in TRIE"))
+
+(defgeneric mapvalues (fn trie)
+  (:documentation "Apply function FN to each value in TRIE."))
+
 (defgeneric all-keys (trie)
   (:documentation "Return list of all keys of TRIE."))
 
@@ -66,9 +72,6 @@ Possible options:
 NIL - do nothing
 :merge - try to merge tries
 :error - raise an error"))
-
-(defgeneric mapkeys (fn trie)
-  (:documentation "Apply function FN to each key in TRIE"))
 
 (define-condition empty-key-warning (warning)
   ()

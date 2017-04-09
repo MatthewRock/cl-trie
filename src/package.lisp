@@ -37,6 +37,7 @@
    find-node
    remove-node
    remove-index
+   mapkeys
    all-keys
    all-values
    emptyp

@@ -108,20 +108,26 @@
               (setf (children previous-node) (remove node-to-delete (children previous-node) :test #'eq)))
           t))))
 
+(defmethod mapkeys ((fn function) (trie trie))
+  (labels ((recursive-fun (trie prefix)
+             (declare (type trie trie)
+                      (type string prefix))
+             (let ((new-prefix (concatenate 'string prefix
+                                            (or (let ((k (key trie)))
+                                                  (when k (string k)))
+                                                ""))))
+               (mapc (lambda (x) (recursive-fun x new-prefix)) (children trie))
+               (when (activep trie)
+                 (funcall fn new-prefix)))))
+    (recursive-fun trie ""))
+  t)
+
 (defmethod all-keys ((trie trie))
   (let (container)
-    (labels ((count-all-keys (trie prefix)
-               (declare (type trie trie)
-                        (type string prefix))
-               ;; Create a new prefix. If node is NIL, use empty string.
-               (let ((new-prefix (concatenate 'string prefix
-                                              (or (let ((k (key trie)))
-                                                    (when k (string k)))
-                                                  ""))))
-                 (mapc (lambda (x) (count-all-keys x new-prefix)) (children trie))
-                 (when (activep trie)
-                   (push new-prefix container)))))
-      (count-all-keys trie ""))
+    (declare (special container))
+    (mapkeys (lambda (x)
+               (push x container))
+             trie)
     container))
 
 (defmethod all-values ((trie trie))
