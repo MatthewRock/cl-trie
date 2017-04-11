@@ -56,19 +56,27 @@
   (setf (activep trie) t))
 
 (defmethod find-node ((trie trie) (index string) &key (create-new nil))
-  (if (string= index "")
-      trie
-      (loop for char across index
-         for current-node = (or (find char (children trie) :test #'char= :key #'key)
-                                ;; TODO: Insert in proper place instead of pushing
-                                ;; To take advantage of binary search
-                                (when create-new (car (push (make-instance 'trie :key char)
-                                                            (children trie)))))
-         then (or (find char (children current-node) :test #'char= :key #'key)
-                  (when create-new (car (push (make-instance 'trie :key char)
-                                              (children current-node)))))
-         while current-node
-         finally (return current-node))))
+  (labels ((add-node (children-list char)
+             (let ((new-node (make-instance 'trie :key char)))
+               (list new-node (sort (cons new-node children-list)
+                                    #'char> :key #'key)))))
+    (if (string= index "")
+        trie
+        (loop for char across index
+           for current-node = (or (find char (children trie) :test #'char= :key #'key)
+                                  ;; TODO: Insert in proper place instead of pushing
+                                  ;; To take advantage of binary search
+                                  (when create-new
+                                    (let ((node-and-children (add-node (children trie) char)))
+                                      (setf (children trie) (second node-and-children))
+                                      (car node-and-children))))
+           then (or (find char (children current-node) :test #'char= :key #'key)
+                    (when create-new
+                      (let ((node-and-children (add-node (children current-node) char)))
+                        (setf (children current-node) (second node-and-children))
+                        (car node-and-children))))
+           while current-node
+           finally (return current-node)))))
 
 (defmethod lookup ((trie trie) (index string))
   (let ((node (find-node trie index)))
