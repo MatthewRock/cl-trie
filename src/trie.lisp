@@ -96,25 +96,26 @@
   ;; Need to setf value first because (setf value) flips activep to true
   (unless preserve-value
     (setf (value node) nil))
-  (setf (activep node) nil))
+  (setf (activep node) nil)
+  node)
 
 (defmethod remove-index ((trie trie) (index string))
   (if (string= index "")
       (remove-node trie)
       ;; Get a node before the deleted one
       (let* ((text-len (length index))
-            (previous-node (find-node trie (subseq index 0 (1- text-len))))
-            (node-to-delete (and previous-node (find (aref index (1- text-len))
-                                                     (children previous-node)
-                                                     :key #'key))))
+             (previous-node (find-node trie (subseq index 0 (1- text-len))))
+             (node-to-delete (and previous-node (find (aref index (1- text-len))
+                                                      (children previous-node)
+                                                      :key #'key))))
         ;; Delete only if the nodes exist
         (when node-to-delete
           ;; If node has ancestors, only deactivate it.
           (if (children node-to-delete)
               (remove-node node-to-delete)
               ;; If node has no ancestors, we can safely remove it.
-              (setf (children previous-node) (remove node-to-delete (children previous-node) :test #'eq)))
-          t))))
+              (setf (children previous-node) (remove node-to-delete (children previous-node) :test #'eq))))
+        trie)))
 
 (defmethod mapkeys ((fn function) (trie trie))
   (labels ((recursive-fun (trie prefix)
@@ -128,7 +129,7 @@
                (when (activep trie)
                  (funcall fn new-prefix)))))
     (recursive-fun trie ""))
-  t)
+  trie)
 
 (defmethod mapvalues ((fn function) (trie trie))
   (labels ((recursive-fun (trie)
@@ -137,7 +138,7 @@
              (when (activep trie)
                (funcall fn (value trie)))))
     (recursive-fun trie))
-  t)
+  trie)
 
 (defmethod all-keys ((trie trie))
   (let (container)
@@ -151,8 +152,8 @@
   (let (container)
     (declare (special container))
     (mapvalues (lambda (x)
-               (push x container))
-             trie)
+                 (push x container))
+               trie)
     container))
 
 (defmethod emptyp ((trie trie))
@@ -160,7 +161,8 @@
   (mapvalues (lambda (val)
                (declare (ignore val))
                (return-from emptyp nil))
-             trie))
+             trie)
+  t)
 
 (defmethod clear ((trie trie))
   (labels ((clear-trie (trie)

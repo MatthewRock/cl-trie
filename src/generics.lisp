@@ -38,16 +38,16 @@ T if anything was found at index and NIL if not."))
   (:documentation "Insert ELEM as value of item at INDEX in TRIE to NEW-VALUE. Alias to (setf lookup)."))
 
 (defgeneric remove-index (trie index)
-  (:documentation "Remove INDEX entry from TRIE."))
+  (:documentation "Remove INDEX entry from TRIE. Return TRIE."))
 
 (defgeneric remove-node (node &key preserve-value)
-  (:documentation "Deactivate NODE, removing the value unless preserve-value is non-nil."))
+  (:documentation "Deactivate NODE, removing the value unless preserve-value is non-nil. Return NODE."))
 
 (defgeneric mapkeys (fn trie)
-  (:documentation "Apply function FN to each key in TRIE"))
+  (:documentation "Apply function FN to each key in TRIE. Returns TRIE."))
 
 (defgeneric mapvalues (fn trie)
-  (:documentation "Apply function FN to each value in TRIE."))
+  (:documentation "Apply function FN to each value in TRIE. Returns TRIE."))
 
 (defgeneric all-keys (trie)
   (:documentation "Return list of all keys of TRIE."))
@@ -56,7 +56,7 @@ T if anything was found at index and NIL if not."))
   (:documentation "Return list of all values of TRIE."))
 
 (defgeneric emptyp (trie)
-  (:documentation "Return T if TRIE is empty."))
+  (:documentation "Return T if TRIE is empty, otherwise NIL."))
 
 (defgeneric clear (trie)
   (:documentation "Clear TRIE of its contents, leaving it empty."))
