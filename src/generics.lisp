@@ -29,10 +29,11 @@
 (defgeneric find-node (trie index &key create-new)
   (:documentation "Find node under INDEX in TRIE, or return NIL if no node has been found. If CREATE-NEW is T, all the nodes, including the searched one, will be created if they do not exist, effectively creating the node at index."))
 
-(defgeneric lookup (trie index)
+(defgeneric lookup (trie index &optional default)
   (:documentation "Check if there is something at INDEX in TRIE.
 Return two values, the first one being value at TRIE, and second one being
-T if anything was found at index and NIL if not."))
+T if anything was found at index and NIL if not.
+If DEFAULT is provided, in case nothing is found, DEFAULT will be returned as the first value."))
 
 (defgeneric insert (elem trie index)
   (:documentation "Insert ELEM as value of item at INDEX in TRIE to NEW-VALUE. Alias to (setf lookup)."))

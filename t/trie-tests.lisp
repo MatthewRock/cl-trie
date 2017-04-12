@@ -104,6 +104,14 @@
     (is (eq ali-node (cl-trie:find-node trie "ali")))
     (is (eq bali-node (cl-trie:find-node trie "bali")))))
 
+(test trie-lookup
+  (let ((trie (make-instance 'cl-trie:trie :verbose nil)))
+    (is (equal (list nil nil) (multiple-value-list (cl-trie:lookup trie "dada"))))
+    (is (equal (list 5 nil) (multiple-value-list (cl-trie:lookup trie "dada" 5))))
+    (setf (cl-trie:lookup trie "dada") 10)
+    (is (equal (list 10 t) (multiple-value-list (cl-trie:lookup trie "dada"))))
+    (is (equal (list 10 t) (multiple-value-list (cl-trie:lookup trie "dada" 5 ))))))
+
 (test trie-setf
   (let ((trie (make-instance 'cl-trie:trie :key nil)))
     (is (not (cl-trie:activep trie)))

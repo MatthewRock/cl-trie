@@ -30,7 +30,7 @@
       :children nil
       :verbose t)
   (:documentation
-   "A tree data structure that allows for efficient representation of large sets of sequential data, like strings."))
+   "A lexicographically sorted trie."))
 
 (defmethod initialize-instance :around ((instance trie)
                                         &key key verbose)
@@ -78,11 +78,14 @@
            while current-node
            finally (return current-node)))))
 
-(defmethod lookup ((trie trie) (index string))
+(defmethod lookup ((trie trie) (index string) &optional (default nil default-passed-p))
   (let ((node (find-node trie index)))
-    (if (and node (activep node))
-        (values (value node) t)
-        (values nil nil))))
+    (cond
+      ;; Node was found
+      ((and node (activep node)) (values (value node) t))
+      ;; Node not found but we have a default
+      (default-passed-p (values default nil))
+      (t (values nil nil)))))
 
 (defmethod (setf lookup) (new-value (trie trie) (index string))
   (let ((node (find-node trie index :create-new t)))
