@@ -145,7 +145,6 @@
 
 (defmethod all-keys ((trie trie))
   (let (container)
-    (declare (special container))
     (mapkeys (lambda (x)
                (push x container))
              trie)
@@ -153,7 +152,6 @@
 
 (defmethod all-values ((trie trie))
   (let (container)
-    (declare (special container))
     (mapvalues (lambda (x)
                  (push x container))
                trie)
