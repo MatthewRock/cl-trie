@@ -64,8 +64,6 @@
         trie
         (loop for char across index
            for current-node = (or (find char (children trie) :test #'char= :key #'key)
-                                  ;; TODO: Insert in proper place instead of pushing
-                                  ;; To take advantage of binary search
                                   (when create-new
                                     (let ((node-and-children (add-node (children trie) char)))
                                       (setf (children trie) (second node-and-children))
