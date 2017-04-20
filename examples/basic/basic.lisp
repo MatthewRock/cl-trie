@@ -1,5 +1,6 @@
 ;; We need these to process the file and store its contents.
-(ql:quickload '(:cl-trie :cl-ppcre))
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (ql:quickload '(:cl-trie :cl-ppcre)))
 
 (defun load-into-trie (file)
   (with-open-file (in file)
@@ -72,13 +73,14 @@
 (defun has-substring (trie substring)
   ;; Return substring node if it was found, NIL otherwise
   (let ((substring-node (cl-trie:find-node trie substring)))
-    (when v v)))
+    (when substring-node
+      substring-node)))
 
 (defun analyze-file (file)
   ;; Measure time of loading the trie
   (let ((trie (time (load-into-trie file))))
     (print-sorted-dictionary trie)
-    (print-size trie)
+    (print-dictionary-size trie)
     (print (count-all-words trie))
     (print (word-occurances trie "The"))
     ;; We can set values of keys using (setf lookup) or #'insert.
