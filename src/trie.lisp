@@ -119,6 +119,9 @@
               (setf (children previous-node) (remove node-to-delete (children previous-node) :test #'eq))))
         trie)))
 
+(defmethod leafp ((trie trie))
+  (emptyp trie))
+
 (defmethod mapkeys ((fn function) (trie trie))
   (labels ((recursive-fun (trie prefix)
              (declare (type trie trie)

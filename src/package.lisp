@@ -44,6 +44,7 @@
    emptyp
    clear
    size
+   leafp
 
    ;; Trie utility functions
    hash-table->trie

@@ -166,6 +166,14 @@
     (is-true (cl-trie:remove-index trie "lisp"))
     (is (= 0 (length (cl-trie:children (cl-trie:find-node trie "lis")))))))
 
+(test trie-leafp
+  (let ((trie (make-instance 'cl-trie:trie :verbose nil)))
+    (is-true (cl-trie:leafp trie))
+    (setf (cl-trie:lookup trie "dada") 3)
+    (is-false (cl-trie:leafp trie))
+    (cl-trie:clear trie)
+    (is-true (cl-trie:leafp trie))))
+
 (test trie-hash-table->trie
   (let ((hash-map (make-hash-table :test #'equal)))
     (setf (gethash "dada" hash-map) 5)

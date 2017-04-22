@@ -44,6 +44,9 @@ If DEFAULT is provided, in case nothing is found, DEFAULT will be returned as th
 (defgeneric remove-node (node &key preserve-value)
   (:documentation "Deactivate NODE, removing the value unless preserve-value is non-nil. Return NODE."))
 
+(defgeneric leafp (trie)
+  (:documentation "Return T if trie is a leaf(has no children), NIL otherwise."))
+
 (defgeneric mapkeys (fn trie)
   (:documentation "Apply function FN to each key in TRIE. Returns TRIE."))
 
