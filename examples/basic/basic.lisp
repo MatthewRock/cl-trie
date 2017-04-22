@@ -67,12 +67,10 @@
                 splitted-line)
        finally (return ht))))
 
-;; THIS DOES NOT WORK CORRECTLY NOW
 (defun print-sorted-dictionary (trie)
   ;; Since default trie implementation ensures that keys are sorted lexicographically, we can simply print all the keys
-  (cl-trie:mapkeys #'print trie)
-  ;; There exists a mapvalues function, which works the same as mapkeys, but function is applied on values.
-  ;; The order stays the same (lexicographical)
+  (mapc #'print (cl-trie:all-keys trie))
+  ;; There exists an all-values function, which returns all values instead of the keys.
   )
 
 (defun print-dictionary-size (trie)
@@ -80,9 +78,11 @@
   (print (cl-trie:size trie)))
 
 (defun count-all-words (trie)
-  ;; This is not the most effective way to do this; a faster way would probably use mapvalues
-  (reduce #'+ (cl-trie:all-values trie))
-  ;; There exists an all-keys function, which returns all keys instead of the values.
+  (let ((counter 0))
+    (cl-trie:mapvalues (lambda (x) (incf counter x)) trie)
+    counter)
+  ;; There exists a mapkeys function, which works the same as mapvalues, but function is applied on keys.
+  ;; The order stays the same (lexicographical)
   )
 
 (defun word-occurances (trie word)
