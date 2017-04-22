@@ -1,7 +1,33 @@
-;; We need these to process the file and store its contents.
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (ql:quickload '(:cl-trie :cl-ppcre)))
+;; Copyright (c) 2017 Mateusz Malisz
 
+
+;; Permission is hereby granted, free of charge, to any person obtaining a copy
+;; of this software and associated documentation files (the "Software"), to deal
+;; in the Software without restriction, including without limitation the rights
+;; to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+;; copies of the Software, and to permit persons to whom the Software is
+;; furnished to do so, subject to the following conditions:
+
+
+;; The above copyright notice and this permission notice shall be included in
+;; all copies or substantial portions of the Software.
+
+
+;; THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+;; IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+;; FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+;; AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+;; LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+;; OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+;; THE SOFTWARE.
+
+(defpackage #:cl-trie-examples/basic
+  (:use :cl)
+  (:export analyze-file))
+
+(in-package #:cl-trie-examples/basic)
+
+;; We need these to process the file and store its contents.
 (defun load-into-trie (file)
   (with-open-file (in file)
     ;; By default, trie warns you when you don't set the key
@@ -41,6 +67,7 @@
                 splitted-line)
        finally (return ht))))
 
+;; THIS DOES NOT WORK CORRECTLY NOW
 (defun print-sorted-dictionary (trie)
   ;; Since default trie implementation ensures that keys are sorted lexicographically, we can simply print all the keys
   (cl-trie:mapkeys #'print trie)
@@ -76,30 +103,51 @@
     (when substring-node
       substring-node)))
 
+(defun announce (string)
+  (terpri)
+  (loop repeat 25 do (princ "=") finally (terpri))
+  (format t "Now ~A!~%" string)
+  (loop repeat 25 do (princ "=") finally (terpri))
+  (terpri))
+
 (defun analyze-file (file)
   ;; Measure time of loading the trie
+  (announce "loading the file")
   (let ((trie (time (load-into-trie file))))
+    (announce "printing the sorted dictionary")
     (print-sorted-dictionary trie)
+    (announce "printing dictionary size")
     (print-dictionary-size trie)
+    (announce "printing all words count (including duplicates)")
     (print (count-all-words trie))
+    (announce "printing occurances of the word \"The\"")
     (print (word-occurances trie "The"))
     ;; We can set values of keys using (setf lookup) or #'insert.
     (cl-trie:insert (1+ (word-occurances trie "The")) trie "The")
+    (announce "printing occurances of the word \"The\", after increasing it by 1")
     (print (word-occurances trie "The"))
     ;; Now since "The" is in the trie, we can be pretty sure it has "Th" substring in there:
+    (announce "Printing whether there is a substring \"Th\" in there (should be!)")
     (print (has-substring trie "Th"))
     ;; Since we wrote has-substring so that it returns the node that it found,
     ;; we can also find that it has a substring "e" (comleting a word "The")
     ;; we can do that, because each node of trie is also a trie.
+    (announce "Printing whether there is a substring \"e\" in the substring \"Th\"(should be!)")
     (print (has-substring (has-substring trie "Th") "e"))
     ;; Now remove the word "The" from the trie.
+    (announce "Removing the \"The\" from the trie!")
     (cl-trie:remove-index trie "The")
+    (announce "Printing occurances of the word \"The\" (should be 0)")
     (print (word-occurances trie "The"))
+    (announce "Is the trie empty?")
     (print-is-empty trie)
     ;; Just to show how the function works, we clear the trie and reload it...
+    (announce "Clearing the trie.")
     (cl-trie:clear trie)
+    (announce "Is the trie empty?")
     (print-is-empty trie)
     ;; But this time we load it into the hash-table and convert it into the trie.
+    (announce "Loading the file once again, but this time to hash-table and then converting it to trie.")
     (time (setf trie (cl-trie:hash-table->trie (load-into-hash-table file))))))
 
 ;; This example did not cover the remove-node function. I'm very sorry for that,

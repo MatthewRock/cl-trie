@@ -57,9 +57,10 @@
 
 (defmethod find-node ((trie trie) (index string) &key (create-new nil))
   (labels ((add-node (children-list char)
+             ;; Insert node in lexicographical order
              (let ((new-node (make-instance 'trie :key char)))
                (list new-node (sort (cons new-node children-list)
-                                    #'char> :key #'key)))))
+                                    #'char-greaterp :key #'key)))))
     (if (string= index "")
         trie
         (loop for char across index
