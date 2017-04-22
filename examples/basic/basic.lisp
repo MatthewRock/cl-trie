@@ -40,30 +40,25 @@
        ;; For word in line
        for splitted-line = (cl-ppcre:split "\\s" line)
        ;; Increase the number of occurances of words.
-       do (mapc (lambda (x) (setf (cl-trie:lookup trie x)
+       do (mapc (lambda (word) (setf (cl-trie:lookup trie word)
                                   ;; lookup accepts default returned value.
                                   ;; By default there are 0 words in text.
-                                  (1+ (cl-trie:lookup trie x 0))))
+                                  (1+ (cl-trie:lookup trie word 0))))
                 splitted-line)
        finally (return trie))))
 
 
 (defun load-into-hash-table (file)
   (with-open-file (in file)
-    ;; By default, trie warns you when you don't set the key
-    ;; The only valid key is either character or NIL.
-    ;; We muffle warning by setting verbose to NIL, making key take the default value
-    ;; The default value for key is NIL.
     (loop with ht = (make-hash-table :test #'equal)
        for line = (read-line in nil 'eof nil)
        until (eql 'eof line)
        ;; For word in line
        for splitted-line = (cl-ppcre:split "\\s" line)
        ;; Increase the number of occurances of words.
-       do (mapc (lambda (x) (setf (gethash x ht)
-                                  ;; lookup accepts default returned value.
-                                  ;; By default there are 0 words in text.
-                                  (1+ (gethash x ht 0))))
+       do (mapc (lambda (word) (setf (gethash word ht)
+                                     ;; By default there are 0 words in text.
+                                  (1+ (gethash word ht 0))))
                 splitted-line)
        finally (return ht))))
 
