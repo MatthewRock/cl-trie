@@ -281,6 +281,15 @@ which is basically what cl-trie:remove-index does. **However**, this also delete
 (cl-trie:remove-node (cl-trie:find-node trie "The") :preserve-value t)
 ```
 
+Tests
+========
+To test the library, load it and use asdf:
+
+``` common-lisp
+(ql:quickload :cl-trie)
+(asdf:test-system 'cl-trie)
+```
+
 Contact
 ========
 
