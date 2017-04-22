@@ -69,7 +69,7 @@
   )
 
 (defun print-dictionary-size (trie)
-  ;; Trie's size is number of strings it holds.
+  ;; Trie's size is number of unique strings(keys) it holds.
   (print (cl-trie:size trie)))
 
 (defun count-all-words (trie)
