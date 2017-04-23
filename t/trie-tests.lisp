@@ -256,7 +256,7 @@
     (cl-trie:clear trie)
     (is (= 0 (cl-trie:size trie))))
   (let ((trie (make-instance 'cl-trie:trie :key #\a :value 3)))
-    (setf (cl-trie:lookup trie "dada") 3)
+    (setf (cl-trie:lookup trie "dada") 5)
     (setf (cl-trie:lookup trie "dad") 2)
     (setf (cl-trie:lookup trie "mom") 4)
     (setf (cl-trie:lookup trie "a") 1)
