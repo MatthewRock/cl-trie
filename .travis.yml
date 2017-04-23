@@ -17,6 +17,12 @@ env:
     #- LISP=clisp
     - LISP=ecl
 
+addons:
+  apt:
+    packages:
+      - libc6-i386
+      - openjdk-7-jre
+
 cache:
   directories:
     - $HOME/.roswell
