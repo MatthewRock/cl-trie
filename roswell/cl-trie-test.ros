@@ -5,6 +5,6 @@ exec ros -Q -- $0 "$@"
 |#
 
 (defun main (&rest argv)
-  (ql:quickload '(:cl-trie) :silent t)
-  (asdf:test-system 'cl-trie))
+  (ql:quickload '(:cl-trie-tests) :silent t)
+  (cl-trie-tests:run-tests))
 ;;; vim: set ft=lisp lisp:

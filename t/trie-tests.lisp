@@ -1,8 +1,8 @@
-(defpackage #:cl-trie/tests
+(defpackage #:cl-trie-tests
   (:use :cl :fiveam)
   (:export run-tests))
 
-(in-package #:cl-trie/tests)
+(in-package #:cl-trie-tests)
 
 (defun run-tests ()
   (run! 'cl-trie-suite))
