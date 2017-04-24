@@ -32,6 +32,7 @@ install:
   - curl -L https://raw.githubusercontent.com/roswell/roswell/release/scripts/install-for-ci.sh | sh
   - ros install fiveam
   - ros install MatthewRock/cl-trie
+  - ros install MatthewRock/cl-trie-tests
 
 script:
   - ./roswell/cl-trie-test.ros
