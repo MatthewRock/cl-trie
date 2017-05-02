@@ -4,7 +4,9 @@
 exec ros -Q -- $0 "$@"
 |#
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (ql:quickload '(:cl-trie) :silent t))
+
 (defun main (&rest argv)
-  (ql:quickload '(:cl-trie) :silent t)
-  (asdf:test-system 'cl-trie))
+  (cl-trie/tests:run-tests))
 ;;; vim: set ft=lisp lisp:
