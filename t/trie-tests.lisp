@@ -260,6 +260,6 @@
     (setf (cl-trie:lookup trie "dad") 2)
     (setf (cl-trie:lookup trie "mom") 4)
     (setf (cl-trie:lookup trie "a") 1)
-    (is (= 5 (cl-trie:size trie)))
+    (is (= 3 (cl-trie:size trie)))
     (cl-trie:clear trie)
     (is (= 0 (cl-trie:size trie)))))
