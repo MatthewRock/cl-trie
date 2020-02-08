@@ -59,21 +59,24 @@
   (labels ((add-node (children-list char)
              ;; Insert node in lexicographical order
              (let ((new-node (make-instance 'trie :key char)))
-               (list new-node (sort (cons new-node children-list)
-                                    #'char-greaterp :key #'key)))))
+               (values new-node
+                       (sort (cons new-node children-list)
+                             #'char-greaterp :key #'key)))))
     (if (string= index "")
         trie
         (loop for char across index
            for current-node = (or (find char (children trie) :test #'char= :key #'key)
                                   (when create-new
-                                    (let ((node-and-children (add-node (children trie) char)))
-                                      (setf (children trie) (second node-and-children))
-                                      (car node-and-children))))
+                                    (multiple-value-bind (node children)
+                                        (add-node (children trie) char)
+                                      (setf (children trie) children)
+                                      node)))
            then (or (find char (children current-node) :test #'char= :key #'key)
                     (when create-new
-                      (let ((node-and-children (add-node (children current-node) char)))
-                        (setf (children current-node) (second node-and-children))
-                        (car node-and-children))))
+                      (multiple-value-bind (node children)
+                          (add-node (children current-node) char)
+                        (setf (children current-node) children)
+                        node)))
            while current-node
            finally (return current-node)))))
 
