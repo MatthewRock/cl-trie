@@ -25,30 +25,30 @@
   (:use #:cl)
   (:export
    ;; Trie and its accessors
-   trie
-   key
-   value
-   activep
-   children
+   #:trie
+   #:key
+   #:value
+   #:activep
+   #:children
 
    ;; Trie generic functions
-   lookup
-   insert
-   find-node
-   remove-node
-   remove-index
-   mapkeys
-   mapvalues
-   all-keys
-   all-values
-   emptyp
-   clear
-   size
-   leafp
+   #:lookup
+   #:insert
+   #:find-node
+   #:remove-node
+   #:remove-index
+   #:mapkeys
+   #:mapvalues
+   #:all-keys
+   #:all-values
+   #:emptyp
+   #:clear
+   #:size
+   #:leafp
 
    ;; Trie utility functions
-   hash-table->trie
+   #:hash-table->trie
 
    ;; Conditions
-   empty-key-warning
-   wrong-key-type-error))
+   #:empty-key-warning
+   #:wrong-key-type-error))

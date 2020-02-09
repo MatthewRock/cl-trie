@@ -59,21 +59,30 @@
   (labels ((add-node (children-list char)
              ;; Insert node in lexicographical order
              (let ((new-node (make-instance 'trie :key char)))
-               (list new-node (sort (cons new-node children-list)
-                                    #'char-greaterp :key #'key)))))
+               (values new-node
+                       (if (null children-list)
+                           (list new-node)
+                           (let ((tail (member-if (lambda (node)
+                                                    (char-greaterp char (key node)))
+                                                  children-list)))
+                             (nconc (ldiff children-list tail)
+                                    (list new-node)
+                                    tail)))))))
     (if (string= index "")
         trie
         (loop for char across index
            for current-node = (or (find char (children trie) :test #'char= :key #'key)
                                   (when create-new
-                                    (let ((node-and-children (add-node (children trie) char)))
-                                      (setf (children trie) (second node-and-children))
-                                      (car node-and-children))))
+                                    (multiple-value-bind (node children)
+                                        (add-node (children trie) char)
+                                      (setf (children trie) children)
+                                      node)))
            then (or (find char (children current-node) :test #'char= :key #'key)
                     (when create-new
-                      (let ((node-and-children (add-node (children current-node) char)))
-                        (setf (children current-node) (second node-and-children))
-                        (car node-and-children))))
+                      (multiple-value-bind (node children)
+                          (add-node (children current-node) char)
+                        (setf (children current-node) children)
+                        node)))
            while current-node
            finally (return current-node)))))
 
@@ -125,15 +134,23 @@
 (defmethod mapkeys ((fn function) (trie trie))
   (labels ((recursive-fun (trie prefix)
              (declare (type trie trie)
-                      (type string prefix))
-             (let ((new-prefix (concatenate 'string prefix
-                                            (or (let ((k (key trie)))
-                                                  (when k (string k)))
-                                                ""))))
+                      (type list prefix))
+             (let ((new-prefix
+                     (let ((k (key trie)))
+                       (if k
+                           (cons (string k) prefix)
+                           prefix))))
                (mapc (lambda (x) (recursive-fun x new-prefix)) (children trie))
                (when (activep trie)
-                 (funcall fn new-prefix)))))
-    (recursive-fun trie ""))
+                 (let* ((len (reduce #'+ new-prefix :key #'length))
+                        (string (make-string len)))
+                   (loop for p in new-prefix
+                         for end = len then start
+                         for start = (- end (length p))
+                         do (replace string p :end1 end
+                                              :start1 start))
+                   (funcall fn string))))))
+    (recursive-fun trie '()))
   trie)
 
 (defmethod mapvalues ((fn function) (trie trie))
