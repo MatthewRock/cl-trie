@@ -60,8 +60,14 @@
              ;; Insert node in lexicographical order
              (let ((new-node (make-instance 'trie :key char)))
                (values new-node
-                       (sort (cons new-node children-list)
-                             #'char-greaterp :key #'key)))))
+                       (if (null children-list)
+                           (list new-node)
+                           (let ((tail (member-if (lambda (node)
+                                                    (char-greaterp char (key node)))
+                                                  children-list)))
+                             (nconc (ldiff children-list tail)
+                                    (list new-node)
+                                    tail)))))))
     (if (string= index "")
         trie
         (loop for char across index
