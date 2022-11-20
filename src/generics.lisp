@@ -45,7 +45,7 @@ If DEFAULT is provided, in case nothing is found, DEFAULT will be returned as th
   (:documentation "Deactivate NODE, removing the value unless preserve-value is non-nil. Return NODE."))
 
 (defgeneric leafp (trie)
-  (:documentation "Return T if trie is a leaf(has no children), NIL otherwise."))
+  (:documentation "Return T if trie is a leaf (has no children), NIL otherwise."))
 
 (defgeneric mapkeys (fn trie)
   (:documentation "Apply function FN to each key in TRIE. Returns TRIE."))
@@ -70,8 +70,8 @@ If DEFAULT is provided, in case nothing is found, DEFAULT will be returned as th
 
 (defgeneric attach (parent-trie children-trie &key on-conflict)
   (:documentation "Attach CHILDREN-TRIE to PARENT-TRIE.
-If conflict happens(attached trie has the same key as already existing branch),
-the on-conflict describes the chosen strategy.
+If conflict happens (attached trie has the same key as already existing branch),
+ON-CONFLICT describes the chosen strategy.
 Possible options:
 NIL - do nothing
 :merge - try to merge tries
@@ -82,11 +82,11 @@ NIL - do nothing
   (:report (lambda (con stream)
              (declare (ignore con))
              (format stream "Key for trie not provided, possibly an overlook! See documentation for more information.")))
-  (:documentation "A warning emmited when key for trie is not provided."))
+  (:documentation "A warning emitted when key for trie is not provided."))
 
 (define-condition wrong-key-type-error (error)
   ()
   (:report (lambda (con stream)
              (declare (ignore con))
              (format stream "A key for trie is of a wrong type! See documentation for more information.")))
-  (:documentation "An error emmited when key is of a wrong type."))
+  (:documentation "An error emitted when key is of a wrong type."))
