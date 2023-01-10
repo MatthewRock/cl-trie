@@ -35,32 +35,32 @@
     ;; We muffle warning by setting verbose to NIL, making key take the default value
     ;; The default value for key is NIL.
     (loop with trie = (make-instance 'cl-trie:trie :verbose nil)
-       for line = (read-line in nil 'eof nil)
-       until (eql 'eof line)
-       ;; For word in line
-       for splitted-line = (cl-ppcre:split "\\s" line)
-       ;; Increase the number of occurances of words.
-       do (mapc (lambda (word) (setf (cl-trie:lookup trie word)
-                                  ;; lookup accepts default returned value.
-                                  ;; By default there are 0 words in text.
-                                  (1+ (cl-trie:lookup trie word 0))))
-                splitted-line)
-       finally (return trie))))
+          for line = (read-line in nil 'eof nil)
+          until (eql 'eof line)
+          ;; For word in line
+          for splitted-line = (cl-ppcre:split "\\s" line)
+          ;; Increase the number of occurrences of words.
+          do (mapc (lambda (word) (setf (cl-trie:lookup trie word)
+                                        ;; lookup accepts default returned value.
+                                        ;; By default there are 0 words in text.
+                                        (1+ (cl-trie:lookup trie word 0))))
+                   splitted-line)
+          finally (return trie))))
 
 
 (defun load-into-hash-table (file)
   (with-open-file (in file)
     (loop with ht = (make-hash-table :test #'equal)
-       for line = (read-line in nil 'eof nil)
-       until (eql 'eof line)
-       ;; For word in line
-       for splitted-line = (cl-ppcre:split "\\s" line)
-       ;; Increase the number of occurances of words.
-       do (mapc (lambda (word) (setf (gethash word ht)
-                                     ;; By default there are 0 words in text.
-                                  (1+ (gethash word ht 0))))
-                splitted-line)
-       finally (return ht))))
+          for line = (read-line in nil 'eof nil)
+          until (eql 'eof line)
+          ;; For word in line
+          for splitted-line = (cl-ppcre:split "\\s" line)
+          ;; Increase the number of occurrences of words.
+          do (mapc (lambda (word) (setf (gethash word ht)
+                                        ;; By default there are 0 words in text.
+                                        (1+ (gethash word ht 0))))
+                   splitted-line)
+          finally (return ht))))
 
 (defun print-sorted-dictionary (trie)
   ;; Since default trie implementation ensures that keys are sorted lexicographically, we can simply print all the keys

@@ -25,7 +25,7 @@
 
 ;; At the lowest level, the trie should consist of key, the value it holds
 ;; and children nodes.
-;; Basic-trie is intended to work as a base class that other trie implementations will derieve from.
+;; Basic-trie is intended to work as a base class that other trie implementations will derive from.
 ;; basic-trie is not meant to be used by itself.
 
 (defclass basic-trie ()

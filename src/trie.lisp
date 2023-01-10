@@ -27,8 +27,8 @@
   ((%activep :initarg :activep :accessor activep :type boolean :initform nil
              :documentation "A flag that tells whether a node is active and value is of interest, or is inactive and value can be ignored."))
   (:default-initargs
-      :children nil
-      :verbose t)
+   :children nil
+   :verbose t)
   (:documentation
    "A lexicographically sorted trie."))
 
@@ -64,18 +64,18 @@
     (if (string= index "")
         trie
         (loop for char across index
-           for current-node = (or (find char (children trie) :test #'char= :key #'key)
-                                  (when create-new
-                                    (let ((node-and-children (add-node (children trie) char)))
-                                      (setf (children trie) (second node-and-children))
-                                      (car node-and-children))))
-           then (or (find char (children current-node) :test #'char= :key #'key)
-                    (when create-new
-                      (let ((node-and-children (add-node (children current-node) char)))
-                        (setf (children current-node) (second node-and-children))
-                        (car node-and-children))))
-           while current-node
-           finally (return current-node)))))
+              for current-node = (or (find char (children trie) :test #'char= :key #'key)
+                                     (when create-new
+                                       (let ((node-and-children (add-node (children trie) char)))
+                                         (setf (children trie) (second node-and-children))
+                                         (car node-and-children))))
+                then (or (find char (children current-node) :test #'char= :key #'key)
+                         (when create-new
+                           (let ((node-and-children (add-node (children current-node) char)))
+                             (setf (children current-node) (second node-and-children))
+                             (car node-and-children))))
+              while current-node
+              finally (return current-node)))))
 
 (defmethod lookup ((trie trie) (index string) &optional (default nil default-passed-p))
   (let ((node (find-node trie index)))
